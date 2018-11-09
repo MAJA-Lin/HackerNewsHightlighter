@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Hacker News Hightlighter",
+  "version": "0.1.0",
+  "author": "Scott Lin",
+  "description": "Hightlight hacker news title by upvotes and comments",
+
+  "background": {
+    "scripts": [
+      "highlighter.js"
+    ],
+    "persistent": false
+  },
+
+  "page_action": {
+    "default_icon": { // optional
+      "16": "images/icon16.png", // optional
+      "24": "images/icon24.png", // optional
+      "32": "images/icon32.png" // optional
+    },
+    "default_title": "Google Mail", // optional; shown in tooltip
+    "default_popup": "popup.html" // optional
+  },
+}
