@@ -1,16 +1,26 @@
 function main() {
+    let structuredHackerNewsList = getStructuredHackerNewsList();
+
+    rankHackerNewsPosts(structuredHackerNewsList);
+
+    console.log(structuredHackerNewsList.length)
+}
+
+function getStructuredHackerNewsList() {
     const titleClass = 'athing';
     const regexOfScore = '^([0-9]*)( )(points)$';
     const regexOfComments = '^([0-9]*)(&nbsp;)(comments)$';
-    let hackerNewsItemList = document.querySelectorAll('.itemlist tbody tr');
 
-    hackerNewsItemList.forEach(function (item, key) {
-        if (item.classList.contains(titleClass)) {
+    let hackerNewsItemList = [...document.querySelectorAll('.itemlist tbody tr')];
+    return hackerNewsItemList
+        .filter(function (item) {
+            return item.classList.contains(titleClass);
+        }).map(function (item, key) {
             let scoreDom = item.nextSibling.querySelectorAll('.score')[0];
-            if (scoreDom == undefined) {
-                return false;
+            let score = 0;
+            if (scoreDom !== undefined) {
+                score = scoreDom.innerHTML.match(regexOfScore)[1];
             }
-            let score = scoreDom.innerHTML.match(regexOfScore)[1];
 
             let allLinkDom = item.nextSibling.querySelectorAll('a');
             let commentsDom = allLinkDom[allLinkDom.length - 1];
@@ -20,11 +30,41 @@ function main() {
                 numberOfComments = parsedResultOfComments[1];
             }
 
-            addRankClass(item, score, numberOfComments);
-        }
-    });
+            return {
+                'title': item,
+                'metaData': item.nextSibling,
+                'blankLine': item.nextSibling.nextSibling,
+                'score': parseInt(score),
+                'numberOfComments': parseInt(numberOfComments),
+                'sumOfScoreAndComments': parseInt(score) + parseInt(numberOfComments)
+            };
+        }).sort(function (previous, current) {
+            return previous.sumOfScoreAndComments - current.sumOfScoreAndComments;
+        });
+}
 
-    return true;
+function rankHackerNewsPosts(structuredHackerNewsList) {
+
+    let median = getMedianIndex(structuredHackerNewsList);
+}
+
+function getMedian(structuredHackerNewsList) {
+    let listLength = structuredHackerNewsList.length;
+
+    if (isOdd(listLength)) {
+        let evenMedianIndex = Math.ceil(listLength / 2) - 1;
+        return structuredHackerNewsList[evenMedianIndex].sumOfScoreAndComments;
+    }
+
+    let evenMedianIndexA = (listLength / 2) - 1;
+    let evenMedianIndexB = evenMedianIndexA + 1;
+
+    return (structuredHackerNewsList[evenMedianIndexA].sumOfScoreAndComments +
+        structuredHackerNewsList[evenMedianIndexB].sumOfScoreAndComments) / 2;
+}
+
+function isOdd(number) {
+    return (number % 2 === 1);
 }
 
 function addRankClass(item, score, numberOfComments) {
