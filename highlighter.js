@@ -43,28 +43,47 @@ function getStructuredHackerNewsList() {
         });
 }
 
-function rankHackerNewsPosts(structuredHackerNewsList) {
-
-    let median = getMedianIndex(structuredHackerNewsList);
+function isOdd(number) {
+    return (number % 2 === 1);
 }
 
-function getMedian(structuredHackerNewsList) {
-    let listLength = structuredHackerNewsList.length;
+function getMedian(collection) {
+    let listLength = collection.length;
 
     if (isOdd(listLength)) {
         let evenMedianIndex = Math.ceil(listLength / 2) - 1;
-        return structuredHackerNewsList[evenMedianIndex].sumOfScoreAndComments;
+        return collection[evenMedianIndex].sumOfScoreAndComments;
     }
 
     let evenMedianIndexA = (listLength / 2) - 1;
     let evenMedianIndexB = evenMedianIndexA + 1;
 
-    return (structuredHackerNewsList[evenMedianIndexA].sumOfScoreAndComments +
-        structuredHackerNewsList[evenMedianIndexB].sumOfScoreAndComments) / 2;
+    return (collection[evenMedianIndexA].sumOfScoreAndComments +
+        collection[evenMedianIndexB].sumOfScoreAndComments) / 2;
 }
 
-function isOdd(number) {
-    return (number % 2 === 1);
+function getAverage(collection) {
+    let sum = collection.reduce(function (sum, item) {
+        return sum + item.sumOfScoreAndComments;
+    }, 0);
+
+    return sum / collection.length;
+}
+
+function getStandardDevilation(collection, average) {
+    let squareDiffSum = collection.reduce(function (sum, item) {
+        let diff = item.sumOfScoreAndComments - average;
+        return sum + Math.pow(diff, 2);
+    }, 0);
+
+    return Math.sqrt(squareDiffSum / collection.length);
+}
+
+function rankHackerNewsPosts(structuredHackerNewsList) {
+
+    let median = getMedian(structuredHackerNewsList);
+    let average = getAverage(structuredHackerNewsList);
+    let standardDevilation = getStandardDevilation(structuredHackerNewsList, average);
 }
 
 function addRankClass(item, score, numberOfComments) {
