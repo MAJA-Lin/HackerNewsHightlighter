@@ -2,8 +2,6 @@ function main() {
     let structuredHackerNewsList = getStructuredHackerNewsList();
 
     rankHackerNewsPosts(structuredHackerNewsList);
-
-    console.log(structuredHackerNewsList.length)
 }
 
 function getStructuredHackerNewsList() {
@@ -46,10 +44,10 @@ function getStructuredHackerNewsList() {
                 'score': parseInt(score),
                 'numberOfComments': parseInt(numberOfComments),
                 'siteWeightingCoefficient': siteWeightingCoefficient,
-                'sumOfScoreAndComments': parseInt(score) + parseInt(numberOfComments) + siteWeightingCoefficient
+                'sum': parseInt(score) + parseInt(numberOfComments) + siteWeightingCoefficient
             };
         }).sort(function (previous, current) {
-            return previous.sumOfScoreAndComments - current.sumOfScoreAndComments;
+            return previous.sum - current.sum;
         });
 }
 
@@ -62,19 +60,19 @@ function getMedian(collection) {
 
     if (isOdd(listLength)) {
         let evenMedianIndex = Math.ceil(listLength / 2) - 1;
-        return collection[evenMedianIndex].sumOfScoreAndComments;
+        return collection[evenMedianIndex].sum;
     }
 
     let evenMedianIndexA = (listLength / 2) - 1;
     let evenMedianIndexB = evenMedianIndexA + 1;
 
-    return (collection[evenMedianIndexA].sumOfScoreAndComments +
-        collection[evenMedianIndexB].sumOfScoreAndComments) / 2;
+    return (collection[evenMedianIndexA].sum +
+        collection[evenMedianIndexB].sum) / 2;
 }
 
 function getAverage(collection) {
     let sum = collection.reduce(function (sum, item) {
-        return sum + item.sumOfScoreAndComments;
+        return sum + item.sum;
     }, 0);
 
     return sum / collection.length;
@@ -82,7 +80,7 @@ function getAverage(collection) {
 
 function getStandardDevilation(collection, average) {
     let squareDiffSum = collection.reduce(function (sum, item) {
-        let diff = item.sumOfScoreAndComments - average;
+        let diff = item.sum - average;
         return sum + Math.pow(diff, 2);
     }, 0);
 
@@ -101,11 +99,11 @@ function getSiteWeightingCoefficient(site) {
     }
 }
 
-function rankHackerNewsPosts(structuredHackerNewsList) {
+function rankHackerNewsPosts(collection) {
 
-    let median = getMedian(structuredHackerNewsList);
-    let average = getAverage(structuredHackerNewsList);
-    let standardDevilation = getStandardDevilation(structuredHackerNewsList, average);
+    let median = getMedian(collection);
+    let average = getAverage(collection);
+    let standardDevilation = getStandardDevilation(collection, average);
 }
 
 function addRankClass(item, score, numberOfComments) {
