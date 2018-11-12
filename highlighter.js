@@ -8,6 +8,7 @@ function main() {
 
 function getStructuredHackerNewsList() {
     const titleClass = 'athing';
+    const siteClass = 'sitestr';
     const regexOfScore = '^([0-9]*)( )(points)$';
     const regexOfComments = '^([0-9]*)(&nbsp;)(comments)$';
 
@@ -16,12 +17,14 @@ function getStructuredHackerNewsList() {
         .filter(function (item) {
             return item.classList.contains(titleClass);
         }).map(function (item, key) {
+            // Get score
             let scoreDom = item.nextSibling.querySelectorAll('.score')[0];
             let score = 0;
             if (scoreDom !== undefined) {
                 score = scoreDom.innerHTML.match(regexOfScore)[1];
             }
 
+            // Get comments
             let allLinkDom = item.nextSibling.querySelectorAll('a');
             let commentsDom = allLinkDom[allLinkDom.length - 1];
             let numberOfComments = 0;
@@ -30,13 +33,20 @@ function getStructuredHackerNewsList() {
                 numberOfComments = parsedResultOfComments[1];
             }
 
+            // Get original site
+            let site = item.querySelector('.sitestr').innerHTML;
+            let siteWeightingCoefficient = getSiteWeightingCoefficient(site);
+
+
             return {
                 'title': item,
                 'metaData': item.nextSibling,
                 'blankLine': item.nextSibling.nextSibling,
+                'site': site,
                 'score': parseInt(score),
                 'numberOfComments': parseInt(numberOfComments),
-                'sumOfScoreAndComments': parseInt(score) + parseInt(numberOfComments)
+                'siteWeightingCoefficient': siteWeightingCoefficient,
+                'sumOfScoreAndComments': parseInt(score) + parseInt(numberOfComments) + siteWeightingCoefficient
             };
         }).sort(function (previous, current) {
             return previous.sumOfScoreAndComments - current.sumOfScoreAndComments;
@@ -77,6 +87,18 @@ function getStandardDevilation(collection, average) {
     }, 0);
 
     return Math.sqrt(squareDiffSum / collection.length);
+}
+
+function getSiteWeightingCoefficient(site) {
+    switch (site) {
+        case 'github.com':
+            return 50;
+            break;
+
+        default:
+            return 0;
+            break;
+    }
 }
 
 function rankHackerNewsPosts(structuredHackerNewsList) {
