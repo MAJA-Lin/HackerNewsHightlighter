@@ -131,41 +131,29 @@ function getQuartiles(collection) {
 
 function rankHackerNewsPosts(collection) {
 
+    let tierOneThreshold = 400;
+    let tierTwoThreshold = 200;
+
     let quartiles = getQuartiles(collection);
     let average = getAverage(collection);
     let variance = getVariance(collection, average);
     let standardDevilation = getStandardDevilation(collection, variance);
-}
 
-function addRankClass(item, score, numberOfComments) {
-    const tierOne = 400;
-    const tierTwo = 300;
-    const tierThree = 100;
-    const tierFour = 0;
-    const scoreWeight = 0.7;
-    const commentWeight = 1.15;
+    let diffOfUpperQuartileAndTierTwoThreshold = quartiles.upper - tierTwoThreshold;
 
-    let result = (score * scoreWeight) + (numberOfComments * commentWeight);
-    let color = '#FFFFFF';
-
-    if (result >= tierOne) {
-        color = '#fc192f';
-    } else if (result < tierOne && result >= tierTwo) {
-        color = '#e2890b';
-    } else if (result < tierTwo && result >= tierThree) {
-        color = '#28a745';
-    } else if (result < tierThree && result >= tierFour) {
-        color = '#6c757d';
-    } else {
-        console.log('???');
+    if (diffOfUpperQuartileAndTierTwoThreshold < 0) {
+        if (Math.abs(diffOfUpperQuartileAndTierTwoThreshold / tierTwoThreshold) > 0.25) {
+            tierTwoThreshold = tierTwoThreshold * 0.68;
+        }
     }
 
-    changeColor(item, color);
-    return item;
-}
-
-function changeColor(item, color) {
-    return item.querySelector('.storylink').style.color = color;
+    return collection.map(function (item) {
+        if (item.weightedSum > tierOneThreshold) {
+            item.titleDom.querySelector('.storylink').style.color = '#f70441';
+        } else if (item.weightedSum > tierTwoThreshold) {
+            item.titleDom.querySelector('.storylink').style.color = '#28a745';
+        }
+    });
 }
 
 main();
