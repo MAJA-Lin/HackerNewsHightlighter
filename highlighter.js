@@ -7,7 +7,7 @@ function main() {
 function getSiteWeightingCoefficient(site) {
     switch (site) {
         case 'github.com':
-            return 50;
+            return 60;
             break;
 
         case 'newyorker.com':
@@ -37,6 +37,8 @@ function getStructuredHackerNewsList() {
             if (scoreDom !== undefined) {
                 score = scoreDom.innerHTML.match(regexOfScore)[1];
             }
+            score = parseInt(score);
+            let weightedScore = score * 0.8;
 
             // Get comments
             let allLinkDom = item.nextSibling.querySelectorAll('a');
@@ -46,6 +48,8 @@ function getStructuredHackerNewsList() {
             if (parsedResultOfComments !== null) {
                 numberOfComments = parsedResultOfComments[1];
             }
+            numberOfComments = parseInt(numberOfComments);
+            let weightedNumberOfComments = numberOfComments * 1.2;
 
             // Get original site
             let site = item.querySelector('.sitestr').innerHTML;
@@ -58,10 +62,11 @@ function getStructuredHackerNewsList() {
                 'metaData': item.nextSibling,
                 'blankLine': item.nextSibling.nextSibling,
                 'site': site,
-                'score': parseInt(score),
-                'numberOfComments': parseInt(numberOfComments),
+                'score': score,
+                'numberOfComments': numberOfComments,
                 'siteWeightingCoefficient': siteWeightingCoefficient,
-                'sum': parseInt(score) + parseInt(numberOfComments) + siteWeightingCoefficient
+                'sum': score + numberOfComments,
+                'weightedSum': weightedScore + weightedNumberOfComments + siteWeightingCoefficient
             };
         }).sort(function (previous, current) {
             // From small to big
