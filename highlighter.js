@@ -4,6 +4,22 @@ function main() {
     rankHackerNewsPosts(structuredHackerNewsList);
 }
 
+function getSiteWeightingCoefficient(site) {
+    switch (site) {
+        case 'github.com':
+            return 50;
+            break;
+
+        case 'newyorker.com':
+            return 50;
+            break;
+
+        default:
+            return 0;
+            break;
+    }
+}
+
 function getStructuredHackerNewsList() {
     const titleClass = 'athing';
     const siteClass = 'sitestr';
@@ -37,7 +53,8 @@ function getStructuredHackerNewsList() {
 
 
             return {
-                'title': item,
+                'titleDom': item,
+                'title': item.innerText,
                 'metaData': item.nextSibling,
                 'blankLine': item.nextSibling.nextSibling,
                 'site': site,
@@ -47,27 +64,13 @@ function getStructuredHackerNewsList() {
                 'sum': parseInt(score) + parseInt(numberOfComments) + siteWeightingCoefficient
             };
         }).sort(function (previous, current) {
+            // From small to big
             return previous.sum - current.sum;
         });
 }
 
 function isOdd(number) {
     return (number % 2 === 1);
-}
-
-function getMedian(collection) {
-    let listLength = collection.length;
-
-    if (isOdd(listLength)) {
-        let evenMedianIndex = Math.ceil(listLength / 2) - 1;
-        return collection[evenMedianIndex].sum;
-    }
-
-    let evenMedianIndexA = (listLength / 2) - 1;
-    let evenMedianIndexB = evenMedianIndexA + 1;
-
-    return (collection[evenMedianIndexA].sum +
-        collection[evenMedianIndexB].sum) / 2;
 }
 
 function getAverage(collection) {
@@ -78,32 +81,55 @@ function getAverage(collection) {
     return sum / collection.length;
 }
 
-function getStandardDevilation(collection, average) {
-    let squareDiffSum = collection.reduce(function (sum, item) {
+function getVariance(collection, average) {
+    let variance = collection.reduce(function (sum, item) {
         let diff = item.sum - average;
         return sum + Math.pow(diff, 2);
     }, 0);
 
-    return Math.sqrt(squareDiffSum / collection.length);
+    return variance;
 }
 
-function getSiteWeightingCoefficient(site) {
-    switch (site) {
-        case 'github.com':
-            return 50;
-            break;
+function getStandardDevilation(collection, variance) {
+    return Math.sqrt(variance / collection.length);
+}
 
-        default:
-            return 0;
-            break;
+function getMedian(collection) {
+    let length = collection.length;
+
+    if (isOdd(length)) {
+        let oddMedianIndex = Math.ceil(length / 2) - 1;
+        result = collection[oddMedianIndex].sum;
+    } else {
+        let evenIndexA = (length / 2) - 1;
+        let evenIndexB = evenIndexA + 1;
+
+        result = (collection[evenIndexA].sum + collection[evenIndexB].sum) / 2;
+    }
+
+    return result;
+}
+
+function getQuartiles(collection) {
+    let length = collection.length;
+    let cloneCollection = collection.slice();
+    let medianIndex = Math.round(length / 2);
+    let lowerHalfCollection = cloneCollection.splice(0, medianIndex);
+    let upperHalfCollection = cloneCollection
+
+    return {
+        'lower': getMedian(lowerHalfCollection),
+        'median': getMedian(collection),
+        'upper': getMedian(upperHalfCollection),
     }
 }
 
 function rankHackerNewsPosts(collection) {
 
-    let median = getMedian(collection);
+    let quartiles = getQuartiles(collection);
     let average = getAverage(collection);
-    let standardDevilation = getStandardDevilation(collection, average);
+    let variance = getVariance(collection, average);
+    let standardDevilation = getStandardDevilation(collection, variance);
 }
 
 function addRankClass(item, score, numberOfComments) {
