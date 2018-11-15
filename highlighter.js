@@ -1,7 +1,9 @@
 function main() {
     let structuredHackerNewsList = getStructuredHackerNewsList();
+    let contentBottom = getBottomOfHackerNewsList()
 
     rankHackerNewsPosts(structuredHackerNewsList);
+    replaceDomWithSortedHackerNewsList(structuredHackerNewsList, contentBottom);
 }
 
 function getSiteWeightingCoefficient(site) {
@@ -59,8 +61,8 @@ function getStructuredHackerNewsList() {
             return {
                 'titleDom': item,
                 'title': item.innerText,
-                'metaData': item.nextSibling,
-                'blankLine': item.nextSibling.nextSibling,
+                'metaDataDom': item.nextSibling,
+                'blankLineDom': item.nextSibling.nextSibling,
                 'site': site,
                 'score': score,
                 'numberOfComments': numberOfComments,
@@ -72,6 +74,31 @@ function getStructuredHackerNewsList() {
             // From small to big
             return previous.sum - current.sum;
         });
+}
+
+function getBottomOfHackerNewsList() {
+    let spaceDom = document.querySelector('.morespace');
+    let bottomTr = spaceDom.nextSibling;
+
+    return [spaceDom, bottomTr];
+}
+
+function replaceDomWithSortedHackerNewsList(collection, contentBottom) {
+    let newsListDom = document.querySelector('.itemlist tbody');
+
+    // Erase everything
+    newsListDom.innerHTML = '';
+
+    // Replace with sorted list
+    collection.reverse().map(function (item) {
+        newsListDom.appendChild(item.titleDom);
+        newsListDom.appendChild(item.metaDataDom);
+        newsListDom.appendChild(item.blankLineDom);
+    });
+
+    contentBottom.map(function (item) {
+        newsListDom.appendChild(item);
+    });
 }
 
 function isOdd(number) {
