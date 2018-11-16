@@ -54,7 +54,10 @@ function getStructuredHackerNewsList() {
             let weightedNumberOfComments = numberOfComments * 1.2;
 
             // Get original site
-            let site = item.querySelector('.sitestr').innerHTML;
+            let site = '';
+            if (item.querySelector('.sitestr') !== null) {
+                site = item.querySelector('.sitestr').innerHTML;
+            }
             let siteWeightingCoefficient = getSiteWeightingCoefficient(site);
 
 
