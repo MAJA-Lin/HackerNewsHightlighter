@@ -179,9 +179,9 @@ function rankHackerNewsPosts(collection) {
 
     return collection.map(function (item) {
         if (item.weightedSum > tierOneThreshold) {
-            item.titleDom.querySelector('.storylink').style.color = '#f70441';
+            item.titleDom.querySelector('.titlelink').style.color = '#f70441';
         } else if (item.weightedSum > tierTwoThreshold) {
-            item.titleDom.querySelector('.storylink').style.color = '#28a745';
+            item.titleDom.querySelector('.titlelink').style.color = '#28a745';
         }
     });
 }
