@@ -178,10 +178,15 @@ function rankHackerNewsPosts(collection) {
     }
 
     return collection.map(function (item) {
+        const tierOneColor = '#f70441';
+        const tierTwoColor = '#28a745';
+
         if (item.weightedSum > tierOneThreshold) {
-            item.titleDom.querySelector('.titlelink').style.color = '#f70441';
+            item.titleDom.querySelector('.rank').style.color = tierOneColor;
+            item.titleDom.querySelector('.titleline>a').style.color = tierOneColor;
         } else if (item.weightedSum > tierTwoThreshold) {
-            item.titleDom.querySelector('.titlelink').style.color = '#28a745';
+            item.titleDom.querySelector('.rank').style.color = tierTwoColor;
+            item.titleDom.querySelector('.titleline>a').style.color = tierTwoColor;
         }
     });
 }
