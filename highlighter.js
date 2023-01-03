@@ -23,15 +23,17 @@ function getSiteWeightingCoefficient(site) {
 }
 
 function getStructuredHackerNewsList() {
-    const titleClass = 'athing';
+    const mainQuery = '#hnmain > tbody > tr:nth-child(3) > td > table > tbody > tr'
+    const newsClass = 'athing';
+    const titleClass = 'span.titleline > a';
     const siteClass = 'sitestr';
     const regexOfScore = '^([0-9]*)( )(points)$';
     const regexOfComments = '^([0-9]*)(&nbsp;)(comments)$';
 
-    let hackerNewsItemList = [...document.querySelectorAll('.itemlist tbody tr')];
+    let hackerNewsItemList = [...document.querySelectorAll(mainQuery)];
     return hackerNewsItemList
         .filter(function (item) {
-            return item.classList.contains(titleClass);
+            return item.classList.contains(newsClass);
         }).map(function (item, key) {
             // Get score
             let scoreDom = item.nextSibling.querySelectorAll('.score')[0];
@@ -60,10 +62,15 @@ function getStructuredHackerNewsList() {
             }
             let siteWeightingCoefficient = getSiteWeightingCoefficient(site);
 
+            let title = '';
+            if (item.querySelector(titleClass) !== null) {
+              title = item.querySelector(titleClass).innerHTML;
+            }
+
 
             return {
                 'titleDom': item,
-                'title': item.innerText,
+                'title': title,
                 'metaDataDom': item.nextSibling,
                 'blankLineDom': item.nextSibling.nextSibling,
                 'site': site,
