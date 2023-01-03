@@ -94,7 +94,8 @@ function getBottomOfHackerNewsList() {
 }
 
 function replaceDomWithSortedHackerNewsList(collection, contentBottom) {
-    let newsListDom = document.querySelector('.itemlist tbody');
+  const bodyDomQuery = '#hnmain > tbody > tr:nth-child(3) > td > table > tbody';
+    let newsListDom = document.querySelector(bodyDomQuery);
 
     // Erase everything
     newsListDom.innerHTML = '';
@@ -187,13 +188,15 @@ function rankHackerNewsPosts(collection) {
     return collection.map(function (item) {
         const tierOneColor = '#f70441';
         const tierTwoColor = '#28a745';
+        const rankDomQuery = '.rank';
+        const titleDomQuery = '.titleline>a';
 
         if (item.weightedSum > tierOneThreshold) {
-            item.titleDom.querySelector('.rank').style.color = tierOneColor;
-            item.titleDom.querySelector('.titleline>a').style.color = tierOneColor;
+            item.titleDom.querySelector(rankDomQuery).style.color = tierOneColor;
+            item.titleDom.querySelector(titleDomQuery).style.color = tierOneColor;
         } else if (item.weightedSum > tierTwoThreshold) {
-            item.titleDom.querySelector('.rank').style.color = tierTwoColor;
-            item.titleDom.querySelector('.titleline>a').style.color = tierTwoColor;
+            item.titleDom.querySelector(rankDomQuery).style.color = tierTwoColor;
+            item.titleDom.querySelector(titleDomQuery).style.color = tierTwoColor;
         }
     });
 }
